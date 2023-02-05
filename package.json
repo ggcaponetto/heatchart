@@ -1,0 +1,20 @@
+{
+  "name": "heatchart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx http-server --cors .",
+    "build": "rollup src/components/heatchart.js --file dist/heatchart.js --format umd --name \"heatchart\"",
+    "build-watch": "rollup -i src/components/heatchart.js --watch --file dist/heatchart.js --format umd --name \"heatchart\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "color": "^4.2.3"
+  }
+}
