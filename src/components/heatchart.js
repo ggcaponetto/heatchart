@@ -48,8 +48,8 @@ function Heatchart(){
     }
 
     this.getCellDimensions = function (horizontalCells, verticalCells){
-        let cellWidth = Math.floor(Math.floor(this.canvas.width) / horizontalCells);
-        let cellHeight = Math.floor(Math.floor(this.canvas.height) / verticalCells);
+        let cellWidth = this.canvas.width / horizontalCells;
+        let cellHeight = this.canvas.height / verticalCells;
         return {
             width: cellWidth, height: cellHeight, canvasWidth: this.canvas.width, canvasHeight: this.canvas.height
         }

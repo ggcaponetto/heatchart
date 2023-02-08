@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx http-server --cors .",
+    "dev": "concurrently \"npm run build-watch\" \"npm run start\"",
     "build": "rollup src/components/heatchart.js --file dist/heatchart.js --format umd --name \"heatchart\"",
     "build-watch": "rollup -i src/components/heatchart.js --watch --file dist/heatchart.js --format umd --name \"heatchart\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^7.6.0",
     "http-server": "^14.1.1"
   },
   "dependencies": {
