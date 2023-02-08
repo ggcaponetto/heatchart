@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://127.0.0.1:8080/dist/heatchart.js" type="application/javascript"></script>
+    <script>
+        let heatChart = new window["heatchart"].Heatchart();
+        heatChart.init({
+            id: "heat-chart",
+            height: 400
+        })
+        /* Quick debugging pollution */
+        window.hc = heatChart;
+        console.log("loaded heat-chart version " + heatChart.version, heatChart)
+    </script>
+</head>
+<body>
+    <canvas id="heat-chart"></canvas>
+</body>
+</html>

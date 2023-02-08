@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script type="module">
+    import * as HeatchartLib from "http://127.0.0.1:8080/src/components/heatchart.js";
+    let Heatchart = HeatchartLib.default.Heatchart;
+    let heatChart = new Heatchart();
+    heatChart.init({
+      id: "heat-chart",
+      height: 400
+    })
+    /* Quick debugging pollution */
+    window.hc = heatChart;
+    console.log("loaded heat-chart version " + heatChart.version, heatChart)
+  </script>
+  <script>
+
+  </script>
+</head>
+<body>
+<canvas id="heat-chart"></canvas>
+</body>
+</html>

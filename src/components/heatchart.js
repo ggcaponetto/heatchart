@@ -48,8 +48,8 @@ function Heatchart(){
     }
 
     this.getCellDimensions = function (horizontalCells, verticalCells){
-        let cellWidth = Math.floor(this.canvas.width / horizontalCells);
-        let cellHeight = Math.floor(this.canvas.height / verticalCells);
+        let cellWidth = Math.floor(Math.floor(this.canvas.width) / horizontalCells);
+        let cellHeight = Math.floor(Math.floor(this.canvas.height) / verticalCells);
         return {
             width: cellWidth, height: cellHeight, canvasWidth: this.canvas.width, canvasHeight: this.canvas.height
         }
@@ -62,7 +62,7 @@ function Heatchart(){
         let colors = [];
         for(let x = 0; x < xCount; x++){
             colors.push([]);
-            for(let y = 0; x < yCount; y++){
+            for(let y = 0; y < yCount; y++){
                 colors[x].push(this.getRandomHEXColor())
             }
         }
@@ -77,10 +77,10 @@ function Heatchart(){
         let x = null;
         let color = null;
         try {
-            for(y = 0; y < this.canvas.height; y++){
-                yColorIndex = Math.floor(y/cellDimensions.height); // quotient
-                for(x = 0; x < this.canvas.width; x++){
-                    xColorIndex = Math.floor(x/cellDimensions.width); // quotient
+            for(x = 0; x < this.canvas.width; x++){
+                xColorIndex = Math.floor(x/cellDimensions.width); // quotient
+                for(y = 0; y < this.canvas.height; y++){
+                    yColorIndex = Math.floor(y/cellDimensions.height); // quotient
                     color = colors[xColorIndex][yColorIndex];
                     this.drawPixel(x, y, color)
                 }
@@ -90,6 +90,7 @@ function Heatchart(){
             console.warn("colors", {
                 colors, cellDimensions, xCount, yCount, yColorIndex, xColorIndex, x, y, color
             })
+            this.drawPixel(x, y, "#FFFFFF")
         }
     }
     return this;
