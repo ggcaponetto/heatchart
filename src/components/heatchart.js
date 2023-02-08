@@ -19,7 +19,7 @@ function Heatchart(){
             this.context = ctx;
             this.canvas = ctx.canvas; // HTMLCanvasElement
 
-            this.canvas.width = canvas.parentElement.getBoundingClientRect().width;
+            this.canvas.width = options.width || canvas.parentElement.getBoundingClientRect().width;
             this.canvas.height = options.height;
         }
         try {
@@ -39,22 +39,14 @@ function Heatchart(){
         this.context.fillRect(roundedX, roundedY, 1, 1);
     }
 
-    this.fill = function fill(color){
-        for(let y = 0; y < this.canvas.height; y++){
-            for(let x = 0; x < this.canvas.width; x++){
-                this.drawPixel(x, y, color)
-            }
-        }
-    }
-
-    this.getCellDimensions = function (horizontalCells, verticalCells){
+    this.getCellDimensions = function getCellDimensions(horizontalCells, verticalCells){
         let cellWidth = this.canvas.width / horizontalCells;
         let cellHeight = this.canvas.height / verticalCells;
         return {
             width: cellWidth, height: cellHeight, canvasWidth: this.canvas.width, canvasHeight: this.canvas.height
         }
     }
-    this.getRandomHEXColor = () => "#" + Math.floor(Math.random()*16777215).toString(16);
+    this.getRandomHEXColor = function getRandomHEXColor (){return "#" + Math.floor(Math.random()*16777215).toString(16)};
 
     this.fillCells = function fillCells(xCount, yCount){
         let cellDimensions = this.getCellDimensions(xCount, yCount);
@@ -76,22 +68,39 @@ function Heatchart(){
         let y = null;
         let x = null;
         let color = null;
+        let imageData = [];
         try {
             for(x = 0; x < this.canvas.width; x++){
                 xColorIndex = Math.floor(x/cellDimensions.width); // quotient
                 for(y = 0; y < this.canvas.height; y++){
                     yColorIndex = Math.floor(y/cellDimensions.height); // quotient
                     color = colors[xColorIndex][yColorIndex];
-                    this.drawPixel(x, y, color)
+                    // this.drawPixel(x, y, color)
                 }
             }
         } catch (e){
-            console.warn(e);
-            console.warn("colors", {
-                colors, cellDimensions, xCount, yCount, yColorIndex, xColorIndex, x, y, color
+            console.warn("error drawing pixel", {
+                colors, cellDimensions, xCount, yCount, yColorIndex, xColorIndex, x, y, color, e
             })
-            this.drawPixel(x, y, "#FFFFFF")
+            // this.drawPixel(x, y, "#FFFFFF")
         }
+        this.context.putImageData(new ImageData(this.canvas.width, this.canvas.height));
+    }
+
+    this.runFrames = function runFrames(x, y, maxFrames){
+        let tempTimestamp;
+        let frameCount = 1;
+        let handle = setInterval(() => {
+            tempTimestamp = performance.now();
+            this.fillCells(2, 2);
+            const elapsed = performance.now() - tempTimestamp;
+            console.log(`[${Math.floor(1000/elapsed)} fps] Canvas drawed in ${Math.floor(elapsed)}ms`);
+            frameCount = frameCount + 1;
+            if(frameCount === maxFrames) {
+                clearInterval(handle);
+                console.log(`[${Math.floor(1000/elapsed)} fps] Canvas drawed in ${Math.floor(elapsed)}ms - stopped after ${maxFrames} frames.`);
+            }
+        }, 0)
     }
     return this;
 }
