@@ -8,19 +8,21 @@
     let Heatchart = HeatchartLib.default.Heatchart;
     let heatChart = new Heatchart();
     heatChart.init({
-      id: "heat-chart",
-      width: 200,
-      height: 200
+      id: "heat-chart"
     })
     /* Quick debugging pollution */
     window.hc = heatChart;
     console.log("loaded heat-chart version " + heatChart.version, heatChart);
   </script>
-  <script>
-
-  </script>
+  <style>
+    html, body{
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-<canvas id="heat-chart"></canvas>
+  <canvas id="heat-chart"></canvas>
 </body>
 </html>

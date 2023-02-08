@@ -3,12 +3,10 @@ function Heatchart(){
     this.canvas = null;
     this.context = null;
     this.init = function init(options={
-        id: "heat-chart",
-        height: 400
+        id: "heat-chart"
     }){
         options = Object.assign( {
-            id: "heat-chart",
-            height: 400
+            id: "heat-chart"
         }, options)
         const initialize = () => {
             const canvas = document.getElementById(options.id);
@@ -19,8 +17,9 @@ function Heatchart(){
             this.context = ctx;
             this.canvas = ctx.canvas; // HTMLCanvasElement
 
-            this.canvas.width = options.width || canvas.parentElement.getBoundingClientRect().width;
-            this.canvas.height = options.height;
+            let parentBoundingClientRect = canvas.parentElement.getBoundingClientRect();
+            this.canvas.width = options.width || parentBoundingClientRect.width;
+            this.canvas.height = options.height || parentBoundingClientRect.height;
         }
         try {
             initialize();
@@ -48,6 +47,22 @@ function Heatchart(){
     }
     this.getRandomHEXColor = function getRandomHEXColor (){return "#" + Math.floor(Math.random()*16777215).toString(16)};
 
+    this.hexToRgb = function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+    this.rgbToHex = function rgbToHex(r, g, b) {
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+
     this.fillCells = function fillCells(xCount, yCount){
         let cellDimensions = this.getCellDimensions(xCount, yCount);
 
@@ -55,52 +70,50 @@ function Heatchart(){
         for(let x = 0; x < xCount; x++){
             colors.push([]);
             for(let y = 0; y < yCount; y++){
-                colors[x].push(this.getRandomHEXColor())
+                let rgb = this.hexToRgb(this.getRandomHEXColor());
+                colors[x].push(rgb)
             }
         }
-
-        console.log("colors", {
-            colors, cellDimensions, xCount, yCount
-        })
 
         let yColorIndex = null;
         let xColorIndex = null;
         let y = null;
         let x = null;
         let color = null;
-        let imageData = [];
-        try {
-            for(x = 0; x < this.canvas.width; x++){
-                xColorIndex = Math.floor(x/cellDimensions.width); // quotient
-                for(y = 0; y < this.canvas.height; y++){
-                    yColorIndex = Math.floor(y/cellDimensions.height); // quotient
-                    color = colors[xColorIndex][yColorIndex];
-                    // this.drawPixel(x, y, color)
+        let imageDataArray = new Uint8ClampedArray(this.canvas.width * this.canvas.height * 4);
+        let pixelCounter = 0;
+        for(x = 0; x < this.canvas.width; x++){
+            xColorIndex = Math.floor(x/cellDimensions.width); // quotient
+            for(y = 0; y < this.canvas.height; y++){
+                yColorIndex = Math.floor(y/cellDimensions.height); // quotient
+                color = colors[xColorIndex][yColorIndex];
+                if(color){
+                    // RGBA
+                    imageDataArray[pixelCounter++] = color.r;
+                    imageDataArray[pixelCounter++] = color.g;
+                    imageDataArray[pixelCounter++] = color.b;
+                    imageDataArray[pixelCounter++] = 255;
                 }
             }
-        } catch (e){
-            console.warn("error drawing pixel", {
-                colors, cellDimensions, xCount, yCount, yColorIndex, xColorIndex, x, y, color, e
-            })
-            // this.drawPixel(x, y, "#FFFFFF")
         }
-        this.context.putImageData(new ImageData(this.canvas.width, this.canvas.height));
+        let imageData = new ImageData(imageDataArray, this.canvas.width, this.canvas.height);
+        this.context.putImageData(imageData, 0, 0);
     }
 
-    this.runFrames = function runFrames(x, y, maxFrames){
-        let tempTimestamp;
-        let frameCount = 1;
-        let handle = setInterval(() => {
-            tempTimestamp = performance.now();
-            this.fillCells(2, 2);
-            const elapsed = performance.now() - tempTimestamp;
-            console.log(`[${Math.floor(1000/elapsed)} fps] Canvas drawed in ${Math.floor(elapsed)}ms`);
-            frameCount = frameCount + 1;
-            if(frameCount === maxFrames) {
-                clearInterval(handle);
-                console.log(`[${Math.floor(1000/elapsed)} fps] Canvas drawed in ${Math.floor(elapsed)}ms - stopped after ${maxFrames} frames.`);
+    this.runFrames = function runFrames(x, y, maxSeconds){
+        let delta = 0;
+        let initialStart = performance.now();
+        const playAnimation = (time) => {
+            delta = performance.now() - time;
+            this.fillCells(x, y);
+            // console.log(`[${Math.floor(1000/delta)} fps] Canvas drawed in ${Math.floor(delta)}ms`);
+            if(performance.now() - initialStart < 1000 * maxSeconds){
+                window.requestAnimationFrame(playAnimation)
+            } else {
+                // console.log(`[${Math.floor(1000/delta)} fps] Canvas drawed in ${Math.floor(delta)}ms - stopped`);
             }
-        }, 0)
+        }
+        window.requestAnimationFrame(playAnimation)
     }
     return this;
 }
